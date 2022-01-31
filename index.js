@@ -2,6 +2,13 @@ const express = require('express')
 const app = express();
 const PORT = process.env.PORT || 8080
 
+const frase = "Hola a todos"
+const palabras = frase.split(" ") // [Hola, a, todos]
+
+// api/palabras/0
+//{ nueva: Adios }
+
+// { buscada: Hola }
 app.use(express.json())
 
 const movies = [
@@ -21,12 +28,18 @@ app.get("/api/movies/:id", (req, res) => {
 
   const movie = movies.find(m => m.id == id)
 
+  // guard clauses
   if(!movie) {
     res.status(404).send({
       error: "Movie not found"
     })
     return
   }
+
+  // if (error) {
+
+  //   return
+  // }
 
   res.send(movie)
 })
@@ -41,7 +54,7 @@ app.post("/api/movies", (req, res) => {
     name
   })
 
-  res.sendStatus(201)
+  res.sendStatus(201) // created
 })
 
 // PUT /movies/id
