@@ -1,6 +1,8 @@
-const express = require('express');
+const express = require('express')
 const app = express();
 const PORT = process.env.PORT || 8080
+
+app.use(express.json())
 
 const movies = [
   { id: 1, name: 'Joker' }, 
@@ -8,68 +10,83 @@ const movies = [
   { id: 3, name: 'Matrix' }
 ];
 
-app.use(express.json())
-// app.use(express.urlencoded({ extended: true }))
-
-app.get('/api/movies', (req, res) => { 
-  res.status(200).send(movies)
+// GET /movies
+app.get("/api/movies", (req, res) => {
+  res.send(movies)
 })
 
-app.get('/api/movies/:id', (req, res) => {
-  const movie = movies.find(m => m.id === req.params.id)
-  if (!movie) {
-    res.status(404).send("Movie not found")
+// GET /movies/id
+app.get("/api/movies/:id", (req, res) => {
+  const { id } = req.params // parametros de URL
+
+  const movie = movies.find(m => m.id == id)
+
+  if(!movie) {
+    res.status(404).send({
+      error: "Movie not found"
+    })
     return
   }
 
   res.send(movie)
 })
 
-app.post('/api/movies/:id', (req, res) => {
-  const { id } = req.params
-  const { name } = req.body
+// POST /movies
 
-  const movie = movies.find(m => m.id === id)
-  if (!movie) {
-    res.status(404).send("Movie not found")
-    return
-  }
+app.post("/api/movies", (req, res) => {
+  const { id, name } = req.body
 
+  movies.push({
+    id,
+    name
+  })
 
   res.sendStatus(201)
 })
 
-app.put('/api/movies/:id', (req, res) => {
-  const { id } = req.params
-  const { name } = req.body
+// PUT /movies/id
 
-  const movie = movies.find(m => m.id === id)
-  if (!movie) {
-    res.status(404).send("Movie not found")
+app.put("/api/movies/:id", (req, res) => {
+  const { id } = req.params // parametros de URL
+
+  const movie = movies.find(m => m.id == id)
+
+  if(!movie) {
+    res.status(404).send({
+      error: "Movie not found"
+    })
     return
   }
 
-  movie.name = name;
+  const { name } = req.body
+
+  movie.name = name
   res.sendStatus(200)
 })
 
-app.delete('/api/movies/:id', (req, res) => {
-  const { id } = req.params
+app.delete("/api/movies/:id", (req, res) => {
+  const { id } = req.params // parametros de URL
 
-  const movie = movies.find(m => m.id === id)
-  if (!movie) {
-    res.status(404).send("Movie not found")
+  const movie = movies.find(m => m.id == id)
+
+  if(!movie) {
+    res.status(404).send({
+      error: "Movie not found"
+    })
     return
   }
+
+  console.log(movies)
 
   const index = movies.indexOf(movie)
   movies.splice(index, 1)
 
   res.sendStatus(200)
+
 })
 
 
 app.listen(
   PORT,
-  () => console.log(`server is running on http://localhost:${PORT}`)
+  () => console.log(`Escuchando en http://localhost:${PORT}`)
 )
